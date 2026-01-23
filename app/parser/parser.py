@@ -51,5 +51,5 @@ def write_timetable_to_json(path):
 
 if __name__ == "__main__":
     print("Writing...")
-    write_timetable_to_json("./data.json")
+    write_timetable_to_json("./app/parser/data.json")
     print("Done!")

@@ -32,4 +32,4 @@ EXPOSE 80
 
 # Command to run the application with Uvicorn (production server)
 # The virtual environment executable is at /app/.venv/bin/uvicorn
-CMD ["/app/.venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["/app/.venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
