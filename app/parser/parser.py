@@ -2,20 +2,27 @@ import json
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 def get_timetable():
-    chrome_options = Options()
-    chrome_options.add_argument("--headless=new")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-
-    driver = webdriver.Chrome(options=chrome_options)
     answer = dict()
     answer["message"] = "ok"
 
     try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
+        driver = webdriver.Remote(
+            command_executor="http://45.151.155.164:4444/wd/hub",
+            options=chrome_options,
+        )
+
         driver.get("https://takvim.tj/")
         today_timetable = driver.find_element(
             By.CSS_SELECTOR, "#wb_element_instance27 #table_namoz_time_today"
@@ -25,15 +32,19 @@ def get_timetable():
             By.CSS_SELECTOR, "tr:has(.td_namoz_time_today)"
         )
 
+        times = dict()
+
         for namoz_time in list_times:
             title = namoz_time.find_element(By.CSS_SELECTOR, ".th_namoz_time_today")
             data = namoz_time.find_element(By.CSS_SELECTOR, ".td_namoz_time_today")
 
-            answer[title.text.lower()] = data.text
+            times[title.text.lower()] = data.text
+
+        answer["times"] = times
+
+        driver.quit()
     except Exception as exception:
         answer["message"] = str(exception)
-    finally:
-        driver.quit()
 
     return answer
 
@@ -43,13 +54,16 @@ def write_to_file(path: str, json: str):
         file.write(json)
 
 
-def write_timetable_to_json(path):
+def write_timetable_to_json(path="./app/parser/data.json"):
+    print("Hello")
     timetable = get_timetable()
+    print(timetable)
     timetable_json = json.dumps(timetable, ensure_ascii=False)
     write_to_file(path, timetable_json)
 
 
 if __name__ == "__main__":
-    print("Writing...")
-    write_timetable_to_json("./app/parser/data.json")
-    print("Done!")
+    # print("Writing...")
+    # write_timetable_to_json("")
+    # print("Done!")
+    ...
