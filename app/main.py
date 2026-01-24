@@ -14,6 +14,9 @@ async def lifespan(app: FastAPI):
     trigger = CronTrigger(hour=14, minute=52)
     scheduler.add_job(write_timetable_to_json, trigger)
     scheduler.start()
+    
+    write_timetable_to_json()
+    
     print("Start")
     yield
     print("End")
